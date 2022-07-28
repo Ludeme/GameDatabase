@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Ba-ila.kml</name>
+	<StyleMap id="m_ylw-pushpin1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl4</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Style id="s_ylw-pushpin_hl4">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Placemark>
+		<name>Ba-ila</name>
+		<styleUrl>#m_ylw-pushpin1</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						26.20683439125919,-15.51196863079203,0 26.06484644241417,-15.54359225803766,0 26.05945652355807,-15.54354314968307,0 25.89201660163105,-15.56959006198279,0 25.76955179553492,-15.54923612213864,0 25.47291709015522,-15.73920764248507,0 25.46118818318513,-15.83565248855809,0 25.52031495298002,-16.01549470832113,0 25.52596373090164,-16.160305548085,0 25.54562856107575,-16.33461023286158,0 25.77911298827216,-16.33834884225077,0 26.0181712225021,-16.30921665775283,0 26.34783778232693,-16.16841908357947,0 26.56797555452501,-16.04547151658254,0 26.98159986873229,-16.0470803451525,0 27.00916818115398,-15.93648098198124,0 26.68435943181608,-15.83885324268627,0 26.67174826972323,-15.83881117988381,0 26.43437832015849,-15.83094765917634,0 26.20683439125919,-15.51196863079203,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>

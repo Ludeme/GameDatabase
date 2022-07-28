@@ -1,0 +1,233 @@
+(define "FlagIsCaptured" (trigger "FlagCaptured" (next)))
+
+(define "FlagWasCaptured" (is Triggered "FlagCaptured" (next)))
+
+(define "RestoredPiecesAndMakeThemVisible"
+    (and { 
+        (fromTo (from) (to (mapEntry (what at:(from))))) 
+        (fromTo (from (to)) (to (mapEntry (what at:(to))))) 
+        (set Visible (mapEntry (what at:(from)))) 
+        (set Visible (mapEntry (what at:(to))))
+    })  
+)
+
+(define "CaptureToPieceAndMakeThemVisisible"
+    (and { 
+        (fromTo (from (to)) (to (mapEntry (what at:(to))))) 
+        (fromTo (from) (to)) 
+        (set Visible (mapEntry (what at:(to)))) 
+        (set Visible (to) Next)
+    })  
+)
+
+(define "CaptureToPieceAndMoveFromPieceAndMakeThemVisisible"
+    (and {
+        (fromTo (from (to)) (to (mapEntry (what at:(to))))) 
+        (fromTo (from) (to)) 
+        (set Visible (mapEntry (what at:(to)))) 
+        (set Visible (from) Next)
+    }) 
+)
+
+(define "CaptureFromPieceAndMakeThemVisisible"
+    (and {
+        (fromTo (from) (to (mapEntry (what at:(from))))) 
+        (set Visible (mapEntry (what at:(from)))) 
+        (set Visible (to) Mover)
+    }) 
+)
+
+(define "Capture" 
+    if:(is Enemy (who at:(to))) 
+    (if (and 
+            (!= (what at:(to)) (id "Bomb" Next)) 
+            (!= (what at:(to)) (id "Flag" Next))
+        )
+        (if (= (value Piece of:(what at:(to))) (value Piece of:(what at:(from))))
+            "RestoredPiecesAndMakeThemVisible"
+            (if (< (value Piece of:(what at:(to))) (value Piece of:(what at:(from))))
+                "CaptureToPieceAndMakeThemVisisible"
+                (if (< (value Piece of:(what at:(from))) (value Piece of:(what at:(to))))
+                    (if (and 
+                            (= (what at:(from)) (id "Spy" Mover)) 
+                            (= (what at:(to)) (id "Marshal" Next))
+                        )
+                        "CaptureToPieceAndMoveFromPieceAndMakeThemVisisible"
+                        "CaptureFromPieceAndMakeThemVisisible"
+                    )
+                )
+            )
+        )
+        (if (= (what at:(to)) (id "Bomb" Next))
+            (if (= (what at:(from)) (id "Miner" Mover))
+                (and { 
+                    (fromTo (from (to)) (to (mapEntry (what at:(to))))) 
+                    (set Visible (mapEntry (what at:(to)))) 
+                    (fromTo (from) (to)) 
+                    (set Visible (from) Next) 
+                })
+                "CaptureFromPieceAndMakeThemVisisible"
+            )
+            (if (= (what at:(to)) (id "Flag" Next))
+                (and 
+                    "FlagIsCaptured" 
+                    (remove (to))
+                )
+            )
+        )
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(game "Stratego"  
+    (players 2)  
+    
+    (equipment { 
+        (board 
+            (hole 
+                (hole 
+                    (square 10) 
+                    (poly { {2 4} {4 4} {4 6} {2 6} })
+                ) 
+                (poly { {6 4} {8 4} {8 6} {6 6} })
+            )
+        ) 
+        (hand Each size:12)
+        
+        (piece "Marshal" Each value:10)
+        (piece "General" Each value:9)
+        (piece "Colonel" Each value:8)
+        (piece "Major" Each value:7)
+        (piece "Captain" Each value:6)
+        (piece "Lieutenant" Each value:5)
+        (piece "Sergeant" Each value:4)
+        (piece "Miner" Each value:3)
+        (piece "Scout" Each value:2)
+        (piece "Spy" Each value:1)
+        (piece "Flag" Each)
+        (piece "Bomb" Each)
+        
+        (regions "HomeP1" P1 (expand (sites Bottom) steps:3) )
+        (regions "HomeP2" P2 (expand (sites Top) steps:3) )
+        (map { (pair 1 92) (pair 2 104) (pair 3 93) (pair 4 105) (pair 5 94) (pair 6 106) (pair 7 95) 
+            (pair 8 107) (pair 9 96) (pair 10 108) (pair 11 97) (pair 12 109) (pair 13 98) (pair 14 110) (pair 15 99) (pair 16 111) (pair 17 100) (pair 18 112) (pair 19 101) (pair 20 113) (pair 21 102) 
+        (pair 22 114) (pair 23 103) (pair 24 115)})
+    })  
+    
+    (rules 
+        (start { <Version> })
+        
+        phases:{
+        (phase "Placement" 
+            (play 
+                (move 
+                    (from (sites Occupied by:Mover container:(mover))) 
+                    (to 
+                        (intersection 
+                            (sites Mover "Home") 
+                            (sites Empty)
+                        )
+                    ) 
+                    (then 
+                        (if 
+                            ("HandEmpty" P2) 
+                            (and 
+                                (set Masked (sites P2 "Home") P1) 
+                                (set Masked (sites P1 "Home") P2)
+                            ) 
+                        ) 
+                    )
+                )
+            ) 
+            (nextPhase ("HandEmpty" P2) "Movement")
+        )
+        (phase "Movement" 
+            (play
+                (or 
+                    (forEach Piece {"Marshal" "General" "Colonel" "Major" "Captain" "Lieutenant" "Sergeant" "Miner" "Spy"} 
+                        (move
+                            Step
+                            Orthogonal 
+                            (to 
+                                if:(or (is Empty (to)) (is Enemy (who at:(to)))) 
+                                (apply "Capture")
+                            )
+                        )
+                    )
+                    (forEach Piece "Scout" 
+                        (move
+                            Slide
+                            Orthogonal 
+                            (to
+                                if:(is Enemy (who at:(to))) 
+                                (apply "Capture")
+                            ) 
+                        )
+                    )
+                )
+            )
+            (end (if (or (no Moves Next) "FlagWasCaptured" ) (result Mover Win))) 
+        )
+        }
+        
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(option "Version" <Version> args:{ <start> }
+    {
+    (item "Normal"   
+        <
+        (place "Marshal1" 92 invisibleTo:{P2}) (place "General1" 93 invisibleTo:{P2}) (place "Colonel1" 94 count:2 invisibleTo:{P2}) (place "Major1" 95 count:3 invisibleTo:{P2}) (place "Captain1" 96 count:4 invisibleTo:{P2})
+        (place "Lieutenant1" 97 count:4 invisibleTo:{P2}) (place "Sergeant1" 98 count:4 invisibleTo:{P2}) (place "Miner1" 99 count:5 invisibleTo:{P2}) (place "Scout1" 100 count:8 invisibleTo:{P2}) (place "Spy1" 101 invisibleTo:{P2})
+        (place "Flag1" 102 invisibleTo:{P2}) (place "Bomb1" 103 count:6 invisibleTo:{P2})
+        
+        (place "Marshal2" 104 invisibleTo:{P1}) (place "General2" 105 invisibleTo:{P1}) (place "Colonel2" 106 count:2 invisibleTo:{P1}) (place "Major2" 107 count:3 invisibleTo:{P1}) (place "Captain2" 108 count:4 invisibleTo:{P1})
+        (place "Lieutenant2" 109 count:4 invisibleTo:{P1}) (place "Sergeant2" 110 count:4 invisibleTo:{P1}) (place "Miner2" 111 count:5 invisibleTo:{P1}) (place "Scout2" 112 count:8 invisibleTo:{P1}) (place "Spy2" 113 invisibleTo:{P1})
+        (place "Flag2" 114 invisibleTo:{P1}) (place "Bomb2" 115 count:6 invisibleTo:{P1})
+        >   
+        "The game is played with the full set of pieces."
+    )**   
+    (item "Normal"   
+        <
+        (place "Marshal1" 92 invisibleTo:{P2}) (place "General1" 93 invisibleTo:{P2})  (place "Miner1" 99 count:2 invisibleTo:{P2}) (place "Scout1" 100 count:2 invisibleTo:{P2}) 
+        (place "Spy1" 101 invisibleTo:{P2}) (place "Flag1" 102 invisibleTo:{P2}) (place "Bomb1" 103 count:2 invisibleTo:{P2})
+        
+        (place "Marshal2" 104 invisibleTo:{P1}) (place "General2" 105 invisibleTo:{P1}) (place "Miner2" 111 count:2 invisibleTo:{P1}) (place "Scout2" 112 count:2 invisibleTo:{P1}) 
+        (place "Spy2" 113 invisibleTo:{P1}) (place "Flag2" 114 invisibleTo:{P1}) (place "Bomb2" 115 count:2 invisibleTo:{P1})
+        >
+        "The game is played with less pieces."
+    )  
+})
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    
+    (info
+        {
+        (description "Stratego was created by Jacques Johan Mogendorff before 1942, but was derived from the game L'Attaque, invented by Hermance Edan.")
+        (rules "Played on a board of 10x10 squares. The board has two 2x2 zones which cannot be entered, represented as water on the battlefield. each player controls 40 pieces which have individual army ranks. The goal is to capture the opponent's flag. Pieces can move only one space orthogonally. the Scout piece can move any number of spaces orthogonally. Pieces may attempt to capture an opposing piece; when doing so the ranks are revealed and the lower ranking piece is captured; if they are of equal rank they are both removed. There are bomb pieces which cannot move. Bombs eliminate other pieces attacking it and can only be removed by a miner. The spy can only attack the Marshall or the Flag.")
+        (source "<a href=\"https://en.wikipedia.org/wiki/Stratego\" target=\"_blank\" class=\"style1\" style=\"color: #0000EE\" />Wikipedia</a>")
+        (version "1.0.6")
+        (classification "proprietary")
+        (author "Jacques Johan Mogendorff")
+        (publisher "Jumbo Games")
+        (credit "Eric Piette")
+        (date "1942")
+        }
+    )
+    
+    (graphics {
+        (show Piece Value)
+        (player Colour P1 (colour Red))
+        (player Colour P2 (colour Blue))
+        (piece Scale 0.8)
+        (piece Colour fillColour:(colour White))
+        (piece Background P1 image:"square" fillColour:(colour Red))
+        (piece Background P2 image:"square" fillColour:(colour Blue))
+    })
+    
+)

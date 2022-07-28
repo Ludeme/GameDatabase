@@ -1,0 +1,102 @@
+(define "Columns" 6)
+
+(define "OppositePit" (if (is Mover P1) (+ (to) "Columns") (- (to) "Columns") ) )
+
+(define "OppositeOuterPit" (if (is Mover P1) (+ (to) (* "Columns" 2)) (- (to) (* "Columns" 2)) ) )
+
+(define "PlayFromLastHole" (sites {(lastTo afterConsequence:true)}))
+
+(define "PlayFrom" 
+    (play 
+        (select (from (if (is Mover Prev) "PlayFromLastHole" (sites Mover #1) ) if:(> (count at:(from)) 0))
+            (then 
+                (sow
+                    "Track"
+                    owner:(mover)
+                    apply:(if (= (count at:(to)) 1)
+                        (if (in (to) (sites Mover "Inner"))
+                            (if (> (count at:"OppositePit") 0) 
+                                (and
+                                    (fromTo (from "OppositePit") (to (mapEntry (mover))) count:(count at:"OppositePit")) 
+                                    (if 
+                                        (> (count at:"OppositeOuterPit") 0) 
+                                        (fromTo (from "OppositeOuterPit") (to (mapEntry (mover))) count:(count at:"OppositeOuterPit")) 
+                                    ) 
+                                ) 
+                            ) 
+                        )
+                        (moveAgain)
+                    )
+                )
+            )
+        )
+    )
+)
+
+(define "PiecesOwnedBy" (+ (count at:(mapEntry #1)) (count in:(sites #1))))
+
+//------------------------------------------------------------------------------
+
+(game "Muvalavala B"  
+    (players 2)  
+    
+    (equipment { 
+        (mancalaBoard rows:4 cols:"Columns" { 
+            (track "Track1" "6,W,N1,E" loop:true P1)
+            (track "Track2" "18,W,N1,E" loop:true P2)
+            }
+        )
+        (regions "Home" P1 (sites Track "Track1"))                              // P1 Home
+        (regions "Home" P2 (sites Track "Track2"))                              // P2 home
+        (regions "Inner" P1 (difference (sites Track "Track1") (sites Bottom))) // P1 inner Home
+        (regions "Inner" P2 (difference (sites Track "Track2") (sites Top) ))   // P2 inner Home
+        (map {(pair P1 FirstSite) (pair P2 LastSite)})                          // kalahs (storage pits)
+        (piece "Seed" Shared)
+        }
+    )  
+    (rules 
+        
+        (start (set Count 2 to:(union (sites P1 "Home") (sites P2 "Home") ) ) )
+        
+        phases:{
+        (phase "Opening" 			  	
+            ("PlayFrom" "Inner")
+            (nextPhase (>= (count Turns) 2) "Playing")
+        )
+        (phase "Playing"  
+            ("PlayFrom" "Home")
+        )
+        }
+        
+        (end
+            (if (no Moves Mover) 
+                (byScore {
+                    (score P1 ("PiecesOwnedBy" P1)) 
+                    (score P2 ("PiecesOwnedBy" P2))
+                })
+            )
+        )
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    
+    (info
+        {
+        (description "Muvalavala is a four-row mancala-style board games played in Southwest Asia, particularly among the Luena and Mbunda people. The game is played with four rows of six holes, or more, up to sixteen, dug into the ground instead of on a board.")
+        (rules "Play begins with two counters in each hole. The first move must be from the inner row. Play begins from any of the player's holes, sowing clockwise. When the final counter lands in an occupied hole, these are picked up and sowing continues. Captures are made when the final counter falls into an empty hole in the inner row, and the opponent's hole opposite contains counters. If it is, they are captured, and if the hole in to outer row opposite also contains counters, these are also captured. If the final counter falls into an empty hole and a capture cannot happen, the turn is over. Play ends when one player cannot move.")
+        (source "Silva 1995: 87.")
+        (version "1.0.0")
+        (classification "board/sow/four rows")
+        (credit "Eric Piette")
+        (origin  "This game was played in Southwest Africa, around 1995CE.")
+        }
+    )
+    
+    (ai 
+        "Muvalavala B_ai"
+    )
+    
+)

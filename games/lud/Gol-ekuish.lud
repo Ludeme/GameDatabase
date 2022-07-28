@@ -1,0 +1,70 @@
+(game "Gol-ekuish"  
+  (players 2)  
+  (equipment { 
+    (wheelBoard {1 6 6 6 6 6 6 6})
+    (piece "Man" Each)
+  }
+  )  
+  
+  (rules 
+  	(start 
+  	 {
+		(place "Man1" (region {3..5 9..11 15..17 21..23 27..29 33..35 39..41})  )
+  		(place "Man2" (region {1 2 6 7 8 12 13 14 18 19 20 24 25 26 30 31 32 36 37 38 42}) )
+  	 }
+  	)
+    
+      (play 
+      	(if (isMover Prev)
+      		(hop 
+	            (lastTo)
+	            to:(in (to) (empty))
+	         	over:(isEnemy (who at:(between)))
+	         	effect:(remove (between))
+	         	(consequence 
+	    	    	(if (canMove (hop (lastTo) to:(in (to) (empty)) over:(isEnemy (who at:(between))) effect:(remove (between)))) (moveAgain))
+	         	)
+	        )
+	      	(priority {
+	          (byPiece "Man" 
+	              (hop 
+	                 to:(in (to) (empty))
+	         		 over:(isEnemy (who at:(between)))
+	         		 effect:(remove (between))
+	         		 (consequence 
+	    	    		(if (canMove (hop (lastTo) to:(in (to) (empty)) over:(isEnemy (who at:(between))) effect:(remove (between)))) (moveAgain))
+	         		 )
+	              )
+	          )
+	          (byPiece "Man" (step (in (to) (empty))))
+	        })
+	    )
+      )
+
+      (end (if (noMoves Next) (result Mover Win)))  
+  )
+)
+
+(metadata 
+
+(info {
+(description "Gol-ekuish is a game from India with leaping captures like many others in South Asia and beyond. The board consists of seven concentric circles divided by three diameters.")
+(aliases {"Gol-skuish"})
+(rules "Each player begins with 21 pieces, arranges on the 21 intersections of three consecutive radii. Moves and captures proceed as in alquerque. The player who captures all of the other player's pieces wins.")
+})
+
+(ai 
+(bestAgent "UCT")
+(heuristics 
+{
+(currentMoverHeuristic weight:0.0)
+(material transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Man2" 0.0)
+})
+(mobilitySimple transformation:(divNumBoardCells) weight:0.0)
+})
+(gameNameCheck "Gol-ekuish")
+)
+
+)

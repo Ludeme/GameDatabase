@@ -1,0 +1,50 @@
+(game "Bicycle"  
+  (players 2)  
+  (equipment { 
+	(board 4
+	{
+		(track "Track1" {14 14 11 10 9 8 8 13 9 5 1 1 4 5 6 7 7 2 6 10} loop:true directed:true)
+	    (track "Track2" {11 11 14 10 6 2 2 7 6 5 4 4 1 5 9 13 13 8 9 10} loop:true directed:true)
+	}	
+    intersections:true
+	)
+    (piece "Disc" Each        
+    	(or {
+   	    	(step Orthogonal (in (to) (empty))) 
+            (define "Slide" (slide #1 along:(or (= (between) (from)) (in (between) (empty))) stop:(isEnemy (who at:(to))) effect:(remove (to))))
+            ("Slide" "Track1")  
+            ("Slide" "Track2")  						
+        }) 
+    )
+  }
+  )  
+  (rules 
+  	(start 
+  	 {
+  		<1>
+  	 }
+  	)
+	    (play (byPiece)) 
+    	(end (if (isZero (size (occupiedBy Next))) (result Mover Win)) )
+   )
+)
+
+(option <1> "Start Rules/Corners" <
+  		(place "Disc1" {"A3" "B3" "A4" "B4"})
+  		(place "Disc2" {"C1" "D1" "C2" "D2"})
+>)*
+(option <1> "Start Rules/Not corners" <
+  		(place "Disc1" {"C4" "B3" "A4" "D3"})
+  		(place "Disc2" {"B1" "D1" "B2" "D2"})
+>)
+
+(metadata 
+
+(info {
+})
+
+(ai 
+(gameNameCheck "Bicycle")
+)
+
+)

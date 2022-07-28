@@ -1,0 +1,121 @@
+(game "Awithlaknannai"  
+    (players 2)  
+    (equipment { 
+        (board
+            (merge
+                (repeat <Columns:num> 1 step:{{0.5 0} {1 0}} (poly {{0.5 0} {0 2} {1 2}}))
+                (repeat <Columns:num> 1 step:{{0.5 0} {1 0}} (poly {{0.5 4} {0 2} {1 2}}))
+            )
+            use:Vertex
+        )
+        (piece "Counter" Each 
+            (or 
+                ("HopCapture")
+                ("StepToEmpty")
+            )
+        )
+    })  
+    
+    (rules 
+        (start {
+            (place "Counter1" (union (sites Bottom) (sites Direction from:(centrePoint) W) ) )
+            (place "Counter2" (union (sites Direction from:(centrePoint) E) (sites Top) ) )
+        })
+        (play (forEach Piece))
+        (end ("NoMoves" Loss))
+    )
+)
+
+//------------------------------------------------------------------------------
+
+(option "Columns" <Columns> args:{ <num> }
+    {
+    (item "4"             
+        <4>
+        "The game is played with 4 columns of the same tiling."
+    )
+    (item "6"             
+        <6>
+        "The game is played with 6 columns of the same tiling."
+    )
+    (item "8"             
+        <8>
+        "The game is played on the Awithlaknan Mosona board (8 columns of the same tiling)."
+    )* 
+    (item "10"             
+        <10>
+        "The game is played with 10 columns of the same tiling."
+    )
+    (item "12"             
+        <12>
+        "The game is played with 12 columns of the same tiling."
+    )
+    (item "14"             
+        <14>
+        "The game is played with 14 columns of the same tiling."
+    )
+    (item "16"             
+        <16>
+        "The game is played on the Kolowis Awithlaknannai board (16 columns of the same tiling)."
+    )
+    (item "18"             
+        <18>
+        "The game is played with 18 columns of the same tiling."
+    )
+    (item "20"             
+        <20>
+        "The game is played with 20 columns of the same tiling."
+    )
+    (item "22"             
+        <22>
+        "The game is played with 22 columns of the same tiling."
+    )
+    (item "24"             
+        <24>
+        "The game is played with 24 columns of the same tiling."
+    )
+    (item "26"             
+        <26>
+        "The game is played with 26 columns of the same tiling."
+    )     
+})
+
+//------------------------------------------------------------------------------
+
+(rulesets { 
+    
+    (ruleset "Ruleset/Mosona (Observed)" 
+        {
+        "Columns/8"
+        }
+    )
+    
+    (ruleset "Ruleset/Kolowis (Observed)" 
+        {
+        "Columns/16"
+        }
+    )
+})
+
+//------------------------------------------------------------------------------
+
+(metadata 
+    
+    (info
+        {
+        (description "A game played by the Zuni in New Mexico. Older Zuni men claim it came there from Mexico. Zuni men described the game and were observed playing it by Matilda Coxe Stevenson. Nick Graham, a Zuni man, drew the board for Stuart Culin, who also observed a board on the roof of a Zuni house. Culin suggests there are two different versions based on the two boards he documented, but Stevenson is clear that the size of the board is not of a specific size.")
+        (aliases {"Awithlaknan Mosona" "Kolowis Awithlaknannai" "Awe Thlacnawe"})
+        (useFor "Ruleset/Mosona (Observed)" (rules "A series of three parallel lines are drawn, with diagonals connecting the outer lines at intervals, crossing each other at the central line. Eight in the outer rows, nine in the central. Pieces are moved along the intersections, and they are placed on the board on opposing sides, leaving the central spot empty. The first player moves to this spot along one of the lines, and the opponent jumps this pieces, thereby capturing it."))
+        (useFor "Ruleset/Mosona (Observed)" (source "Culin 1907: 801; Stevenson 1903: 496-497."))
+        (useFor "Ruleset/Kolowis (Observed)" (rules "A series of three parallel lines are drawn, with diagonals connecting the outer lines at intervals, crossing each other at the central line. Sixteen spaces in the outer rows, fifteen in the central row. Pieces are moved along the intersections, and they are placed on the board on opposing sides, leaving the central spot empty. The first player moves to this spot along one of the lines, and the opponent jumps this pieces, thereby capturing it."))
+        (useFor "Ruleset/Kolowis (Observed)" (source "Culin 1907: 801; Stevenson 1903: 496-497"))
+        (version "1.0.7")
+        (classification "board/war/leaping")
+        (credit "Eric Piette")
+        (origin  "This game was played in Zuni, from around 1902CE to 1903CE.")
+        }
+    )
+    (ai
+        "Awithlaknannai_ai"
+    )
+)

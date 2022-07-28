@@ -1,0 +1,76 @@
+(game "Dash-guti"  
+  (players 2)  
+  (equipment { 
+    (customBoard 
+    	(graph
+    			vertices:{ {0 0} {3 0} {6 0} {1 1} {3 1} {5 1} {2 2} {3 2} {4 2} {0 3} {3 3} {6 3} {2 4} {3 4} {4 4} {1 5} {3 5} {5 5} {0 6} {3 6} {6 6}}
+    			edges:{ {0 1} {0 3} {1 2} {1 4} {2 5} {3 4} {3 6} {4 5} {4 7} {5 8} {6 7} {6 10} {7 8} {7 10} {8 10} {9 10} {10 11}
+    				    {10 12} {10 13} {10 14} {12 13} {12 15} {13 14} {13 16} {14 17} {15 16} {15 18} {16 17} {16 19} {17 20} {18 19} {19 20} {9 18} {0 9} {11 20} {2 11}}
+    	)
+    )
+    (piece "Man" Each)
+  }
+  )  
+  
+  (rules 
+  	(start 
+  	 {
+		(place "Man1" (region {0..9} )  )
+  		(place "Man2" (region {11..20} ) )
+  	 }
+  	)
+    
+      (play 
+      	(if (isMover Prev)
+      		(hop 
+	            (lastTo)
+	            to:(in (to) (empty))
+	         	over:(isEnemy (who at:(between)))
+	         	effect:(remove (between))
+	         	(consequence 
+	    	    	(if (canMove (hop (lastTo) to:(in (to) (empty)) over:(isEnemy (who at:(between))) effect:(remove (between)))) (moveAgain))
+	         	)
+	        )
+	      	(priority {
+	          (byPiece "Man" 
+	              (hop 
+	                 to:(in (to) (empty))
+	         		 over:(isEnemy (who at:(between)))
+	         		 effect:(remove (between))
+	         		 (consequence 
+	    	    		(if (canMove (hop (lastTo) to:(in (to) (empty)) over:(isEnemy (who at:(between))) effect:(remove (between)))) (moveAgain))
+	         		 )
+	              )
+	          )
+	          (byPiece "Man" (step (in (to) (empty))))
+	        })
+	    )
+      )
+    
+      (end (if (noMoves Next) (result Mover Win))) 
+  )
+)
+
+(metadata 
+
+(info {
+(description "Dash-guti is a game with similar movement and capturing rules to alquerque, but played on a much different board. It is played in India. This game is incorrectly reported in Murray's History of Games Other than Chess, which has led to this incorrect version appearing online with some frequency.")
+(aliases {"Kowwu dunki" "Kowwa dunki"})
+(rules "Each player lays out the pieces on the board on the intersections of the lines, each filling all the intersections of the triangle closest to the player, plus the extra intersection to their right. Play moves to the next adjacent intersection connected by a line. Opponent's pieces can be captured by jumping as in alquerque. The player who captures all of the opponent's pieces wins.")
+})
+
+(ai 
+(bestAgent "UCT")
+(heuristics 
+{
+(currentMoverHeuristic weight:0.0)
+(material transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Man2" 0.0)
+})
+(mobilitySimple transformation:(divNumBoardCells) weight:0.0)
+})
+(gameNameCheck "Dash-guti")
+)
+
+)

@@ -1,0 +1,120 @@
+(game "De Cercar La Liebre"  
+  (players 2)   
+  (equipment { 
+    <1>
+    (piece "Man" P1 "StepToEmpty") 
+    (piece "Hare" P2 (or <2> (if "SameTurn" (pass) "StepToEmpty") ) )
+  }
+  )  
+  (rules 
+   (start
+    { 
+    (place "Man1" (union {(expand (sites Bottom) steps:1) (sitesFromCoords {"A3" "E3"})}))
+    (place "Hare2" (centrePoint))
+    }
+   )
+ 
+    (play (byPiece)) 
+    
+    (end
+    	{
+    		("NoMoves" Loss)
+    		(if (<= (pieceCount P1) 9) (result P2 Win))
+    	}
+    )
+  )
+)
+
+(option <1> "Board/Normal" 
+    <(alquerqueBoard 5) >
+)
+
+(option <1> "Board/Less Diagonal" 
+    <(alquerqueBoard 5 (remove {{2 6} {6 10} {10 16} {16 22} {22 18} {18 14} {14 8} {8 2}} )) >
+)
+
+(option <1> "Board/No Diagonal" 
+    <(alquerqueBoard 5 (remove Diagonal))>
+)
+
+(option <2> "Play Rules/No multiple hops" <"HopCapture">)*
+(option <2> "Play Rules/Multiple hops" <("HopSequenceCapture" delay:true)> )
+
+(metadata 
+
+(info {
+(description "This game is documented in Alfonso X's Libro de los Juegos. It is one of the earliest hunt games that has documented rules, and was played in thirteenth century Spain. It is played on an alquerque de doze board. Alfonso X 91")
+(aliases {"\"catch the hare\""})
+(rules "One player is the rabbit, and the other player plays with twelve other pieces. They may also play with either ten or eleven pieces instead of twelve. The pieces move along the lines. The goal is to corner the rabbit so that it cannot move. The rabbit may hop over the other pieces to capture them. The rabbit wins by reducing the opponent to nine pieces.")
+})
+
+(ai 
+(and {"Board/Less Diagonal"} (bestAgent "AlphaBeta"))
+(and {"Board/No Diagonal"} (bestAgent "AlphaBeta"))
+(and {"Board/Normal"} (bestAgent "AlphaBeta"))
+(heuristics 
+(and {"Board/Less Diagonal"} {
+(material transformation:(divNumInitPlacement) weight:0.5992347 pieceWeights:{
+(pair "Man1" 1.0)
+(pair "Hare2" 1.0)
+})
+(centreProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+(cornerProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+(currentMoverHeuristic weight:0.0)
+(mobilitySimple transformation:(divNumBoardCells) weight:0.0)
+(sidesProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+})
+(and {"Board/No Diagonal"} {
+(material transformation:(divNumInitPlacement) weight:0.9733933 pieceWeights:{
+(pair "Man1" 1.0)
+(pair "Hare2" 1.0)
+})
+(centreProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+(cornerProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+(currentMoverHeuristic weight:0.0)
+(mobilitySimple transformation:(divNumBoardCells) weight:0.0)
+(sidesProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+})
+(and {"Board/Normal"} {
+(material transformation:(divNumInitPlacement) weight:0.88853675 pieceWeights:{
+(pair "Man1" 1.0)
+(pair "Hare2" 1.0)
+})
+(centreProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+(cornerProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+(currentMoverHeuristic weight:0.0)
+(mobilitySimple transformation:(divNumBoardCells) weight:0.0)
+(sidesProximity transformation:(divNumInitPlacement) pieceWeights:{
+(pair "Man1" 0.0)
+(pair "Hare2" 0.0)
+})
+})
+)
+(gameNameCheck "De Cercar La Liebre")
+)
+
+)

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>New Mexico Navajo.kml</name>
+	<Style id="s_ylw-pushpin_hl">
+		<IconStyle>
+			<scale>1.3</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<StyleMap id="m_ylw-pushpin">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#s_ylw-pushpin</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#s_ylw-pushpin_hl</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="s_ylw-pushpin">
+		<IconStyle>
+			<scale>1.1</scale>
+			<Icon>
+				<href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href>
+			</Icon>
+			<hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
+		</IconStyle>
+	</Style>
+	<Placemark>
+		<name>New Mexico Navajo</name>
+		<styleUrl>#m_ylw-pushpin</styleUrl>
+		<Polygon>
+			<tessellate>1</tessellate>
+			<outerBoundaryIs>
+				<LinearRing>
+					<coordinates>
+						-109.0433331960362,34.90278639722058,0 -108.6884486647797,34.90142668995239,0 -108.2231492541919,34.93944067209755,0 -107.9209147118178,34.98492281651218,0 -107.9056502328241,34.99396959964083,0 -107.6425427887327,35.11951852472546,0 -107.6272952457917,35.12543323113562,0 -107.6121210038703,35.12825836109746,0 -107.4748193110606,35.17829027656619,0 -107.4519802388199,35.18404016937726,0 -107.2992461960971,35.23358023575134,0 -107.0825725512068,35.13007944697946,0 -107.0712112055188,35.12982476838859,0 -106.8361493901455,35.12428513124413,0 -106.824454218282,35.1332816219281,0 -106.7150779077506,35.32552437794126,0 -106.6911927678386,35.45798286891412,0 -106.6870337113271,35.46716315990677,0 -106.7313939626617,35.61055223079241,0 -106.7348689033883,35.61991574477644,0 -106.738459733273,35.62618788785622,0 -106.8156616075452,35.81359945927692,0 -106.9242508022502,35.98618275282222,0 -107.0185478953473,36.13678121466012,0 -107.0218247517377,36.15234220160176,0 -107.3045125217371,36.4305799240576,0 -107.4275454145264,36.56010651216578,0 -107.5084343420788,36.69219517163404,0 -107.6285233761351,36.81884806681254,0 -107.6323057783179,36.82202831957424,0 -107.6893974649874,37.00120770626475,0 -109.0381235959293,36.99865481485167,0 -109.0433331960362,34.90278639722058,0 
+					</coordinates>
+				</LinearRing>
+			</outerBoundaryIs>
+		</Polygon>
+	</Placemark>
+</Document>
+</kml>
